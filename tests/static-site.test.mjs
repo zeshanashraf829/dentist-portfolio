@@ -8,6 +8,7 @@ const firebaseConfigPath = new URL("../assets/js/firebase-config.js", import.met
 const firebaseClientPath = new URL("../assets/js/firebase-client.js", import.meta.url);
 const siteCmsPath = new URL("../assets/js/site-cms.js", import.meta.url);
 const adminJsPath = new URL("../assets/js/admin.js", import.meta.url);
+const stylesPath = new URL("../assets/css/styles.css", import.meta.url);
 const firestoreRulesPath = new URL("../firebase/firestore.rules", import.meta.url);
 
 function readHtml() {
@@ -111,6 +112,24 @@ test("gallery, testimonials, FAQ, SEO, and local assets are wired", () => {
   const imageTags = html.match(/<img\b/g) ?? [];
   assert.ok(imageTags.length >= 8, "Expected at least 8 image assets");
   assert.doesNotMatch(html, /<img(?![^>]*alt=)/, "Every image should have alt text");
+});
+
+test("gallery comparison labels stay attached to the before and after image grid", () => {
+  assert.ok(existsSync(stylesPath), "styles.css should exist");
+
+  const css = readFileSync(stylesPath, "utf8");
+
+  assert.match(css, /\.comparison\s*\{[^}]*display:\s*grid/s, "Comparison wrapper should remain a grid");
+  assert.doesNotMatch(
+    css,
+    /\.case-card\s+span\s*\{/,
+    "Generic case-card span styles should not override the comparison wrapper"
+  );
+  assert.match(
+    css,
+    /\.case-card\s*>\s*div\s*>\s*span\s*\{/,
+    "Case category styling should be scoped to the content metadata span"
+  );
 });
 
 test("public site is wired for Firebase CMS hydration and appointment storage", () => {

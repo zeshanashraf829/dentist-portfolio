@@ -673,6 +673,7 @@ p {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  width: 100%;
   min-height: 255px;
   overflow: hidden;
   background: var(--surface);
@@ -689,6 +690,7 @@ p {
   background: rgba(15, 23, 42, 0.72);
   font-size: 0.72rem;
   font-weight: 900;
+  text-transform: uppercase;
 }
 
 .comparison::before {
@@ -716,7 +718,7 @@ p {
   padding: 18px;
 }
 
-.case-card span {
+.case-card > div > span {
   display: inline-block;
   margin-bottom: 8px;
   color: var(--secondary-dark);
