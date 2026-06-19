@@ -30,21 +30,24 @@ const state = {
   unsubs: [],
 };
 
+const CURRENT_CONTENT_VERSION = "dr-asif-mushtaq-2026-06";
+
 const starterContent = {
   settings: {
+    contentVersion: CURRENT_CONTENT_VERSION,
     doctor: {
       name: "Dr Asif Mushtaq",
-      credentials: "BDS, FCPS - Oral & Maxillofacial Surgery",
+      credentials: "FCPS Prosthodontics, BDS",
     },
     hero: {
-      headline: "Creating Healthy & Confident Smiles",
+      headline: "Advanced Prosthodontic & Implant Rehabilitation",
       description:
-        "Personalized dental surgery, restorative dentistry, and cosmetic care in a calm, modern clinic designed around comfort, clarity, and long-term oral health.",
+        "Licensed Senior Registrar Prosthodontist and Assistant Professor providing comprehensive oral rehabilitation, implant-supported prostheses, crowns, veneers, dentures, and esthetic restorative care.",
     },
     contact: {
-      phone: "+92 300 9844763",
-      whatsapp: "+92 300 9844763",
-      email: "asifmushtaq@gmail.com",
+      phone: "+92 334 9844763",
+      whatsapp: "+92 334 9844763",
+      email: "dr.asif100@yahoo.com",
       address: "857-A, J-2 Block Market, Phase 2, Johar Town, Lahore",
     },
     hours: {
@@ -52,20 +55,19 @@ const starterContent = {
       weekend: "10:00 AM - 4:00 PM",
     },
     social: {
-      instagram: "",
-      facebook: "",
-      linkedin: "",
+      instagram: "https://www.instagram.com/dr.muhammadasifmushtaq",
+      tiktok: "https://www.tiktok.com/@dr_asifmushtaq",
     },
   },
   services: [
-    ["dental-cleaning", { title: "Dental Cleaning", icon: "sparkles", description: "Professional scaling, polishing, and gum-health checks to keep your smile fresh and healthy.", order: 1, active: true }],
-    ["root-canal-treatment", { title: "Root Canal Treatment", icon: "activity", description: "Comfort-led endodontic care that saves infected teeth and relieves pain precisely.", order: 2, active: true }],
-    ["teeth-whitening", { title: "Teeth Whitening", icon: "sun", description: "Clinician-supervised whitening plans for a brighter smile with enamel-safe protocols.", order: 3, active: true }],
-    ["dental-implants", { title: "Dental Implants", icon: "circle-dot", description: "Natural-looking tooth replacement planned for stability, function, and long-term confidence.", order: 4, active: true }],
-    ["braces-orthodontics", { title: "Braces & Orthodontics", icon: "align-center-horizontal", description: "Alignment options for better bite balance, aesthetics, and easier daily oral hygiene.", order: 5, active: true }],
-    ["tooth-extraction", { title: "Tooth Extraction", icon: "shield-plus", description: "Careful removal of damaged or impacted teeth with strong comfort and recovery guidance.", order: 6, active: true }],
-    ["fillings", { title: "Fillings", icon: "badge-plus", description: "Tooth-colored restorations designed to protect structure and blend with your smile.", order: 7, active: true }],
-    ["cosmetic-dentistry", { title: "Cosmetic Dentistry", icon: "wand-sparkles", description: "Veneers, bonding, contouring, and smile design for refined, natural-looking results.", order: 8, active: true }],
+    ["full-mouth-rehabilitation", { title: "Full Mouth Rehabilitation", icon: "scan-face", description: "Comprehensive planning for worn, missing, failing, or collapsed dentitions using fixed, removable, and implant-supported options.", order: 1, active: true }],
+    ["crowns-bridges-veneers", { title: "Crowns, Bridges & Veneers", icon: "badge-check", description: "PFM, all-ceramic crowns, bridges, veneers, and smile-defining restorations for function and natural esthetics.", order: 2, active: true }],
+    ["implant-supported-prostheses", { title: "Implant-Supported Prostheses", icon: "circle-dot", description: "Single implant restorations, implant-supported bridges, overdentures, and full-arch prosthetic rehabilitation.", order: 3, active: true }],
+    ["complete-partial-dentures", { title: "Complete & Partial Dentures", icon: "smile", description: "Complete dentures, cast partial dentures, flexible dentures, and immediate dentures designed for comfort and retention.", order: 4, active: true }],
+    ["smile-design", { title: "Smile Design", icon: "wand-sparkles", description: "Esthetic rehabilitation, veneers, tooth proportions, and restorative planning for confident, natural-looking smiles.", order: 5, active: true }],
+    ["occlusal-splints", { title: "Occlusal Splints", icon: "moon", description: "Night guards, bite stabilization, occlusal analysis, and temporomandibular treatment planning support.", order: 6, active: true }],
+    ["maxillofacial-prosthodontics", { title: "Maxillofacial Prosthodontics", icon: "shield-plus", description: "Special prosthodontic support including obturators and coordinated multidisciplinary rehabilitation for complex needs.", order: 7, active: true }],
+    ["digital-implant-planning", { title: "Digital Implant Planning", icon: "scan-line", description: "Digital impressions, restorative workflow planning, laboratory coordination, and prosthesis delivery protocols.", order: 8, active: true }],
   ],
   gallery: [
     ["whitening-case", { title: "In-Clinic Whitening", category: "whitening", description: "Shade improvement with supervised enamel-safe whitening.", beforeImageUrl: "https://images.unsplash.com/photo-1667133295315-820bb6481730?auto=format&fit=crop&w=700&q=80", afterImageUrl: "https://images.unsplash.com/photo-1617812191081-2a24e3f30e45?auto=format&fit=crop&w=700&q=80", order: 1, active: true }],
@@ -75,14 +77,14 @@ const starterContent = {
   ],
   testimonials: [
     ["sara-malik", { patientName: "Sara Malik", role: "Cosmetic Dentistry Patient", rating: 5, review: "The consultation was calm and clear. I understood the treatment plan before we started, and the final result feels completely natural.", photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80", order: 1, active: true }],
-    ["hamza-farooq", { patientName: "Hamza Farooq", role: "Root Canal Patient", rating: 5, review: "I came in with severe tooth pain and was treated the same day. The root canal was much easier than I expected.", photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80", order: 2, active: true }],
+    ["hamza-farooq", { patientName: "Hamza Farooq", role: "Crown & Bite Rehabilitation Patient", rating: 5, review: "My crowns and bite were planned with great care. The treatment felt organized, and my smile looks natural.", photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80", order: 2, active: true }],
     ["amina-sheikh", { patientName: "Amina Sheikh", role: "Implant Patient", rating: 5, review: "The clinic feels modern, clean, and welcoming. My implant planning was explained step by step, which made the process easier.", photoUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=300&q=80", order: 3, active: true }],
   ],
   faqs: [
-    ["whitening-enamel", { question: "Does professional whitening damage enamel?", answer: "Professional whitening is planned around your tooth condition and gum health. Protective barriers and controlled materials help reduce sensitivity and protect enamel.", order: 1, active: true }],
-    ["implant-longevity", { question: "How long do dental implants last?", answer: "With careful planning, healthy gums, and regular maintenance visits, dental implants can last many years and often become a long-term tooth replacement option.", order: 2, active: true }],
-    ["root-canal-pain", { question: "Is root canal treatment painful?", answer: "Local anesthesia and modern techniques make root canal treatment much more comfortable than many patients expect.", order: 3, active: true }],
-    ["emergency-booking", { question: "Can I book an emergency appointment?", answer: "Yes. Call or send a WhatsApp message for toothache, swelling, trauma, broken restorations, or urgent dental pain.", order: 4, active: true }],
+    ["full-mouth-rehab", { question: "Who needs full mouth rehabilitation?", answer: "It is considered for patients with multiple missing, worn, broken, or failing teeth, bite collapse, or complex restorative needs that require coordinated prosthodontic planning.", order: 1, active: true }],
+    ["implant-prostheses", { question: "What is an implant-supported prosthesis?", answer: "It is a crown, bridge, overdenture, or full-arch restoration supported by dental implants and planned to restore function, comfort, and esthetics.", order: 2, active: true }],
+    ["prosthodontist", { question: "Why see a prosthodontist?", answer: "A prosthodontist has specialist training in restoring and replacing teeth, including crowns, bridges, dentures, veneers, implants, bite rehabilitation, and complex oral rehabilitation.", order: 3, active: true }],
+    ["cv-download", { question: "Can I review Dr Asif's professional CV?", answer: "Yes. Use the Download CV button on the website to review his FCPS Prosthodontics training, clinical experience, publications, and professional background.", order: 4, active: true }],
   ],
 };
 
@@ -391,7 +393,7 @@ function bindEvents() {
   $("[data-settings-form]")?.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
-      await saveSiteSettings(formToObject(event.currentTarget));
+      await saveSiteSettings({ ...formToObject(event.currentTarget), contentVersion: CURRENT_CONTENT_VERSION });
       setStatus("Clinic settings saved.", "success");
     } catch (error) {
       setStatus(error.message, "error");

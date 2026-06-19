@@ -10,6 +10,7 @@ const siteCmsPath = new URL("../assets/js/site-cms.js", import.meta.url);
 const adminJsPath = new URL("../assets/js/admin.js", import.meta.url);
 const stylesPath = new URL("../assets/css/styles.css", import.meta.url);
 const logoPath = new URL("../assets/images/dr-asif-logo.jpg", import.meta.url);
+const cvPath = new URL("../assets/docs/asif-mushtaq-prosthodontist-cv.pdf", import.meta.url);
 const firestoreRulesPath = new URL("../firebase/firestore.rules", import.meta.url);
 
 function readHtml() {
@@ -52,24 +53,24 @@ test("services and trust content match the dental portfolio brief", () => {
   const html = readHtml();
   const pageText = visibleText(html);
   const services = [
-    "Dental Cleaning",
-    "Root Canal Treatment",
-    "Teeth Whitening",
-    "Dental Implants",
-    "Braces & Orthodontics",
-    "Tooth Extraction",
-    "Fillings",
-    "Cosmetic Dentistry",
+    "Full Mouth Rehabilitation",
+    "Crowns, Bridges & Veneers",
+    "Implant-Supported Prostheses",
+    "Complete & Partial Dentures",
+    "Smile Design",
+    "Occlusal Splints",
+    "Maxillofacial Prosthodontics",
+    "Digital Implant Planning",
   ];
   const trustItems = [
-    "10+ Years Experience",
-    "1000+ Happy Patients",
-    "Modern Equipment",
-    "Experienced Dentist",
-    "Latest Technology",
-    "Sterilized Environment",
-    "Affordable Treatment",
-    "Emergency Support",
+    "Senior Registrar Prosthodontist",
+    "500+ Implant Restorations",
+    "1000+ Crowns & Veneers",
+    "FCPS Prosthodontics",
+    "SCFHS Licensed",
+    "Assistant Professor",
+    "Digital Workflow",
+    "Hospital-Based Experience",
     "Patient-Centered Care",
   ];
 
@@ -140,16 +141,22 @@ test("default clinic identity uses Dr Asif Mushtaq details and circular logo", (
   const css = readFileSync(stylesPath, "utf8");
 
   assert.ok(existsSync(logoPath), "Dr Asif logo should be committed as a local site asset");
+  assert.ok(existsSync(cvPath), "Dr Asif CV should be committed as a downloadable local site asset");
 
   for (const source of [html, admin, adminJs]) {
     assert.match(source, /Dr Asif Mushtaq/);
-    assert.match(source, /asifmushtaq@gmail\.com/);
-    assert.match(source, /\+92 300 9844763/);
+    assert.match(source, /dr\.asif100@yahoo\.com/);
+    assert.match(source, /\+92 334 9844763/);
     assert.match(source, /857-A, J-2 Block Market, Phase 2, Johar Town, Lahore/);
-    assert.doesNotMatch(source, /Dr\. Hazzar Ahmed|Hazzar Dental|appointments@hazzardental\.com|\+92 300 1234567|Suite 12, Main Boulevard/);
+    assert.doesNotMatch(source, /Dr\. Hazzar Ahmed|Hazzar Dental|appointments@hazzardental\.com|asifmushtaq@gmail\.com|\+92 300 9844763|\+92 300 1234567|Suite 12, Main Boulevard/);
   }
 
   assert.match(html, /assets\/images\/dr-asif-logo\.jpg/);
+  assert.match(html, /assets\/docs\/asif-mushtaq-prosthodontist-cv\.pdf/);
+  assert.match(html, /Download CV/);
+  assert.match(html, /Senior Registrar Prosthodontist/);
+  assert.match(html, /SCFHS \(14RD0039936\)/);
+  assert.match(html, /FCPS Prosthodontics/);
   assert.match(admin, /assets\/images\/dr-asif-logo\.jpg/);
   assert.match(css, /\.brand-mark\s+img\s*\{[^}]*border-radius:\s*50%/s);
 });
@@ -161,14 +168,16 @@ test("footer social links use recognizable brand icons and CMS-managed URLs", ()
   const siteCms = readFileSync(siteCmsPath, "utf8");
   const css = readFileSync(stylesPath, "utf8");
 
-  for (const network of ["instagram", "facebook", "linkedin"]) {
+  for (const network of ["instagram", "tiktok"]) {
     assert.match(html, new RegExp(`data-cms-social="${network}"`), `${network} link should be CMS-managed`);
     assert.match(html, new RegExp(`data-social-icon="${network}"`), `${network} should use a brand SVG icon`);
     assert.match(siteCms, new RegExp(`social\\?\\.${network}`), `${network} URL should hydrate from site settings`);
-    assert.match(adminJs, new RegExp(`${network}: ""`), `${network} should exist in starter content`);
+    assert.match(adminJs, new RegExp(`${network}: "https://`), `${network} should have a default starter URL`);
   }
 
-  assert.match(admin, /name="social\.linkedin"/, "Admin settings should include a LinkedIn URL field");
+  assert.match(html, /https:\/\/www\.instagram\.com\/dr\.muhammadasifmushtaq/);
+  assert.match(html, /https:\/\/www\.tiktok\.com\/@dr_asifmushtaq/);
+  assert.match(admin, /name="social\.tiktok"/, "Admin settings should include a TikTok URL field");
   assert.match(css, /\.social-icon\s*\{[^}]*width:\s*20px/s, "Brand SVG icons should have stable sizing");
   assert.match(
     css,
@@ -180,6 +189,7 @@ test("footer social links use recognizable brand icons and CMS-managed URLs", ()
 
 test("public site is wired for Firebase CMS hydration and appointment storage", () => {
   const html = readHtml();
+  const siteCms = readFileSync(siteCmsPath, "utf8");
 
   assert.match(html, /assets\/js\/site-cms\.js/);
   assert.match(html, /data-cms-root/);
@@ -190,6 +200,8 @@ test("public site is wired for Firebase CMS hydration and appointment storage", 
   assert.match(html, /data-cms-field="hero\.headline"/);
   assert.match(html, /data-cms-field="contact\.phone"/);
   assert.match(html, /data-appointment-form/);
+  assert.match(siteCms, /CURRENT_CONTENT_VERSION/);
+  assert.match(siteCms, /isCurrentCmsContent/);
 });
 
 test("admin dashboard and Firebase modules exist with required capabilities", () => {
@@ -220,8 +232,10 @@ test("admin dashboard and Firebase modules exist with required capabilities", ()
 
   assert.match(config, /firebaseConfig/);
   assert.match(config, /isFirebaseConfigured/);
-  assert.match(config, /ranazeshi41@gmail\.com/);
-  assert.doesNotMatch(config, /admin@doctorsport\.com|doctor@example\.com/);
+  assert.match(config, /dr\.asifdentalimplantcenter@gmail\.com/);
+  assert.doesNotMatch(config, /ranazeshi41@gmail\.com|admin@doctorsport\.com|doctor@example\.com/);
+  assert.match(admin, /placeholder="you@example\.com"/);
+  assert.doesNotMatch(admin, /placeholder="ranazeshi41@gmail\.com"|type="password"[^>]*value=/);
 
   for (const fn of [
     "saveAppointmentRequest",
@@ -239,6 +253,7 @@ test("admin dashboard and Firebase modules exist with required capabilities", ()
   assert.match(admin, /assets\/images\/gallery/);
   assert.match(siteCms, /loadPublicCms/);
   assert.match(siteCms, /saveAppointmentRequest/);
+  assert.match(adminJs, /contentVersion:\s*CURRENT_CONTENT_VERSION/);
   assert.match(adminJs, /signInAdmin/);
   assert.doesNotMatch(adminJs, /uploadImageFile|uploadOptionalFile/);
 });
@@ -250,8 +265,8 @@ test("Firebase security rules are included for Firestore only", () => {
   const firestoreRules = readFileSync(firestoreRulesPath, "utf8");
 
   assert.match(firestoreRules, /match \/siteSettings\/\{document\}/);
-  assert.match(firestoreRules, /ranazeshi41@gmail\.com/);
-  assert.doesNotMatch(firestoreRules, /admin@doctorsport\.com|doctor@example\.com/);
+  assert.match(firestoreRules, /dr\.asifdentalimplantcenter@gmail\.com/);
+  assert.doesNotMatch(firestoreRules, /ranazeshi41@gmail\.com|admin@doctorsport\.com|doctor@example\.com/);
   assert.match(firestoreRules, /match \/appointmentRequests\/\{document\}/);
   assert.match(firestoreRules, /allow create: if true/);
   assert.match(firestoreRules, /allow write: if request\.auth != null/);

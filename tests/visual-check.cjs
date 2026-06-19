@@ -40,7 +40,7 @@ async function main() {
   await page.locator("#fullName").fill("Test Patient");
   await page.locator("#phone").fill("+92 300 0000000");
   await page.locator("#email").fill("patient@example.com");
-  await page.selectOption("#service", "Dental Cleaning");
+  await page.selectOption("#service", "Full Mouth Rehabilitation");
   await page.locator("#preferredDate").fill("2026-07-01");
   await page.locator("#message").fill("Routine checkup request.");
   await page.locator(".form-submit").click();

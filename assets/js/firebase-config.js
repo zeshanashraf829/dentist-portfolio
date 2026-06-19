@@ -8,7 +8,7 @@ export const firebaseConfig = {
 };
 
 export const firebaseCmsSettings = {
-  adminEmails: ["ranazeshi41@gmail.com"],
+  adminEmails: ["dr.asifdentalimplantcenter@gmail.com"],
   sdkVersion: "12.14.0",
 };
 

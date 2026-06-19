@@ -33,8 +33,9 @@ Firebase web config has already been added to `assets/js/firebase-config.js`. Th
 4. Enable Authentication:
    - Authentication > Sign-in method > Email/Password > Enable.
    - Authentication > Users > Add user.
-   - Use `ranazeshi41@gmail.com`.
-5. Confirm the admin email allowlist is `ranazeshi41@gmail.com` in:
+   - Use `dr.asifdentalimplantcenter@gmail.com`.
+   - Use the password you provided in Firebase Authentication only; do not commit it into the website code.
+5. Confirm the admin email allowlist is `dr.asifdentalimplantcenter@gmail.com` in:
    - `assets/js/firebase-config.js`
    - `firebase/firestore.rules`
 6. Create Firestore Database.
@@ -44,7 +45,7 @@ Firebase web config has already been added to `assets/js/firebase-config.js`. Th
 firebase deploy --only firestore:rules
 ```
 
-8. Open `/admin.html`, log in, then click **Load Starter Content** once.
+8. Open `/admin.html`, log in, then click **Load Starter Content** once. This publishes the current Dr Asif defaults and marks Firestore with the current content version, so older seeded demo records do not override the updated website.
 
 The currently published Firestore rule intentionally allows public appointment creates:
 
@@ -55,7 +56,7 @@ match /appointmentRequests/{document} {
 }
 ```
 
-That is the simplest working setup for the website form. Admin-only collections still require the signed-in `ranazeshi41@gmail.com` user.
+That is the simplest working setup for the website form. Admin-only collections still require the signed-in `dr.asifdentalimplantcenter@gmail.com` user.
 
 ## Image Flow Without Firebase Storage
 

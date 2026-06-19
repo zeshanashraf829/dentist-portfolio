@@ -542,6 +542,7 @@ p {
 }
 
 .credentials,
+.cv-grid,
 .why-grid,
 .service-grid {
   display: grid;
@@ -549,6 +550,7 @@ p {
 }
 
 .credentials article,
+.cv-grid article,
 .why-grid article,
 .service-card,
 .case-card,
@@ -560,6 +562,7 @@ p {
 }
 
 .credentials article,
+.cv-grid article,
 .why-grid article,
 .service-card {
   padding: 22px;
@@ -567,6 +570,7 @@ p {
 }
 
 .credentials article:hover,
+.cv-grid article:hover,
 .why-grid article:hover,
 .service-card:hover {
   transform: translateY(-4px);
@@ -575,12 +579,31 @@ p {
 }
 
 .credentials svg,
+.cv-grid svg,
 .why-grid svg,
 .service-card > svg {
   width: 32px;
   height: 32px;
   margin-bottom: 18px;
   color: var(--primary);
+}
+
+.cv-grid article {
+  display: grid;
+  align-content: start;
+}
+
+.cv-grid h3 {
+  margin-bottom: 12px;
+}
+
+.cv-grid ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.65;
 }
 
 .timeline {
@@ -1214,6 +1237,7 @@ textarea:focus {
 
   .gallery-grid,
   .credentials,
+  .cv-grid,
   .why-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1262,6 +1286,10 @@ textarea:focus {
 
   .service-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cv-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .testimonial-card {

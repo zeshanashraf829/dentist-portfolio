@@ -7,6 +7,8 @@ import {
 } from "./firebase-client.js";
 
 const fallbackNotice = "Firebase is not configured yet. Your form is working locally, but requests will not be saved until Firebase config is added.";
+const CURRENT_CONTENT_VERSION = "dr-asif-mushtaq-2026-06";
+const LEGACY_CONTENT_PATTERN = /Creating Healthy & Confident Smiles|asifmushtaq@gmail\.com|\+92 300 9844763|facebook\.com|linkedin\.com/i;
 window.__siteCmsLoaded = true;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,6 +29,11 @@ export async function loadPublicCms() {
       getOrderedCollection(CMS_COLLECTIONS.faqs),
     ]);
 
+    if (!isCurrentCmsContent(settings)) {
+      console.info("Ignoring older Firebase CMS content. Use the admin Seed Starter Content button to publish the current Dr Asif defaults.");
+      return;
+    }
+
     if (settings) applySettings(settings);
     renderServices(services.filter(isActive));
     renderGallery(gallery.filter(isActive));
@@ -36,6 +43,12 @@ export async function loadPublicCms() {
   } catch (error) {
     console.warn("Could not load Firebase CMS content.", error);
   }
+}
+
+function isCurrentCmsContent(settings) {
+  if (!settings) return true;
+  if (settings.contentVersion === CURRENT_CONTENT_VERSION) return true;
+  return !LEGACY_CONTENT_PATTERN.test(JSON.stringify(settings));
 }
 
 function bindAppointmentForm() {
@@ -98,8 +111,7 @@ function applySettings(settings) {
   setLink("[data-cms-map-link]", `https://maps.google.com/?q=${encodeURIComponent(settings.contact?.address || "")}`);
 
   document.querySelectorAll("[data-cms-social='instagram']").forEach((link) => setHref(link, settings.social?.instagram));
-  document.querySelectorAll("[data-cms-social='facebook']").forEach((link) => setHref(link, settings.social?.facebook));
-  document.querySelectorAll("[data-cms-social='linkedin']").forEach((link) => setHref(link, settings.social?.linkedin));
+  document.querySelectorAll("[data-cms-social='tiktok']").forEach((link) => setHref(link, settings.social?.tiktok));
 }
 
 function getNested(target, path) {
