@@ -63,12 +63,11 @@ test("services and trust content match the dental portfolio brief", () => {
     "Digital Implant Planning",
   ];
   const trustItems = [
-    "Senior Registrar Prosthodontist",
+    "Assistant Professor",
     "500+ Implant Restorations",
     "1000+ Crowns & Veneers",
     "FCPS Prosthodontics",
     "SCFHS Licensed",
-    "Assistant Professor",
     "Digital Workflow",
     "Hospital-Based Experience",
     "Patient-Centered Care",
@@ -154,7 +153,7 @@ test("default clinic identity uses Dr Asif Mushtaq details and circular logo", (
   assert.match(html, /assets\/images\/dr-asif-logo\.jpg/);
   assert.match(html, /assets\/docs\/asif-mushtaq-prosthodontist-cv\.pdf/);
   assert.match(html, /Download CV/);
-  assert.match(html, /Senior Registrar Prosthodontist/);
+  assert.match(html, /Assistant Professor/);
   assert.match(html, /SCFHS \(14RD0039936\)/);
   assert.match(html, /FCPS Prosthodontics/);
   assert.match(admin, /assets\/images\/dr-asif-logo\.jpg/);
