@@ -21,11 +21,12 @@ export async function loadPublicCms() {
   if (!root || !isFirebaseConfigured()) return;
 
   try {
-    const [settings, services, gallery, testimonials, faqs] = await Promise.all([
+    const [settings, services, gallery, testimonials, publications, faqs] = await Promise.all([
       getSiteSettings(),
       getOrderedCollection(CMS_COLLECTIONS.services),
       getOrderedCollection(CMS_COLLECTIONS.gallery),
       getOrderedCollection(CMS_COLLECTIONS.testimonials),
+      getOrderedCollection(CMS_COLLECTIONS.publications),
       getOrderedCollection(CMS_COLLECTIONS.faqs),
     ]);
 
@@ -38,6 +39,7 @@ export async function loadPublicCms() {
     renderServices(services.filter(isActive));
     renderGallery(gallery.filter(isActive));
     renderTestimonials(testimonials.filter(isActive));
+    renderPublications(publications.filter(isActive));
     renderFaqs(faqs.filter(isActive));
     window.DentalSite?.refreshCmsInteractions();
   } catch (error) {
@@ -197,6 +199,24 @@ function renderTestimonials(items) {
             <h3>${escapeHtml(item.patientName)}</h3>
             <span>${escapeHtml(item.role)}</span>
           </div>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderPublications(items) {
+  const container = document.querySelector("[data-cms-section='publications']");
+  if (!container || !items.length) return;
+
+  container.innerHTML = items
+    .map(
+      (item) => `
+        <article class="publication-card">
+          <i data-lucide="external-link" aria-hidden="true"></i>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
+          <a href="${escapeAttribute(item.link || "#")}" target="_blank" rel="noopener">View publication</a>
         </article>
       `
     )

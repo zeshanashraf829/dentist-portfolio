@@ -528,7 +528,8 @@ p {
 }
 
 .text-link,
-.service-card a {
+.service-card a,
+.publication-card a {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -543,6 +544,7 @@ p {
 
 .credentials,
 .cv-grid,
+.publication-grid,
 .why-grid,
 .service-grid {
   display: grid;
@@ -551,6 +553,7 @@ p {
 
 .credentials article,
 .cv-grid article,
+.publication-card,
 .why-grid article,
 .service-card,
 .case-card,
@@ -563,6 +566,7 @@ p {
 
 .credentials article,
 .cv-grid article,
+.publication-card,
 .why-grid article,
 .service-card {
   padding: 22px;
@@ -571,6 +575,7 @@ p {
 
 .credentials article:hover,
 .cv-grid article:hover,
+.publication-card:hover,
 .why-grid article:hover,
 .service-card:hover {
   transform: translateY(-4px);
@@ -580,6 +585,7 @@ p {
 
 .credentials svg,
 .cv-grid svg,
+.publication-card > svg,
 .why-grid svg,
 .service-card > svg {
   width: 32px;
@@ -604,6 +610,20 @@ p {
   padding-left: 20px;
   color: var(--muted);
   line-height: 1.65;
+}
+
+.publication-card {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+}
+
+.publication-card h3 {
+  margin-bottom: 12px;
+}
+
+.publication-card p {
+  margin-bottom: 18px;
 }
 
 .timeline {
@@ -1210,6 +1230,19 @@ textarea:focus {
   text-align: center;
 }
 
+.reveal-on-scroll {
+  opacity: 1;
+  transform: translateY(18px);
+  transition:
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform;
+}
+
+.reveal-on-scroll.is-visible {
+  transform: translateY(0);
+}
+
 .lightbox-close {
   position: absolute;
   top: 18px;
@@ -1238,6 +1271,7 @@ textarea:focus {
   .gallery-grid,
   .credentials,
   .cv-grid,
+  .publication-grid,
   .why-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1349,6 +1383,10 @@ textarea:focus {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .publication-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .why-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1426,6 +1464,11 @@ textarea:focus {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 .admin-body {
@@ -1487,6 +1530,7 @@ textarea:focus {
 
 .admin-shell {
   min-height: 100vh;
+  background: var(--surface);
 }
 
 .admin-sidebar {
@@ -1494,11 +1538,17 @@ textarea:focus {
   top: 0;
   z-index: 20;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 18px;
   padding: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   background: #0f172a;
   color: var(--white);
+}
+
+.admin-sidebar .brand {
+  min-width: 0;
 }
 
 .admin-sidebar .brand small,
@@ -1507,10 +1557,12 @@ textarea:focus {
 }
 
 .admin-nav {
+  grid-column: 1 / -1;
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  margin-inline: -2px;
+  padding: 2px 2px 6px;
   scrollbar-width: none;
 }
 
@@ -1522,13 +1574,16 @@ textarea:focus {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  min-height: 44px;
   padding: 11px 13px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
   color: rgba(255, 255, 255, 0.78);
   background: rgba(255, 255, 255, 0.06);
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .admin-nav button.active,
@@ -1544,10 +1599,13 @@ textarea:focus {
 
 .admin-signout {
   width: fit-content;
+  justify-self: end;
+  min-height: 44px;
+  padding: 11px 13px;
 }
 
 .admin-content {
-  width: min(100% - 28px, 1180px);
+  width: min(100% - 32px, 1180px);
   margin: 0 auto;
   padding: 28px 0 70px;
 }
@@ -1564,6 +1622,10 @@ textarea:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.admin-topbar-actions .btn {
+  min-width: min(100%, 178px);
 }
 
 .admin-global-status {
@@ -1585,11 +1647,11 @@ textarea:focus {
 }
 
 .admin-panel.active {
-  display: block;
+  display: grid;
+  gap: 22px;
 }
 
 .admin-editor {
-  margin-bottom: 22px;
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1707,15 +1769,24 @@ textarea:focus {
   }
 
   .admin-sidebar {
+    grid-template-columns: 1fr;
     min-height: 100vh;
     align-content: start;
+    align-items: start;
     border-right: 1px solid rgba(255, 255, 255, 0.12);
     border-bottom: 0;
   }
 
   .admin-nav {
+    grid-column: auto;
     display: grid;
     overflow: visible;
+    margin-inline: 0;
+    padding: 0;
+  }
+
+  .admin-signout {
+    justify-self: start;
   }
 
   .admin-content {
@@ -1731,5 +1802,70 @@ textarea:focus {
   .admin-card {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-login-card,
+  .admin-editor,
+  .admin-card,
+  .admin-empty {
+    padding: 18px;
+  }
+
+  .admin-content {
+    width: min(100% - 24px, 1180px);
+    padding-top: 22px;
+  }
+
+  .admin-login-card h1,
+  .admin-topbar h1 {
+    font-size: 1.65rem;
+  }
+
+  .admin-topbar-actions,
+  .admin-card-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-topbar-actions .btn,
+  .admin-card-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-check {
+    min-height: auto;
+    padding-top: 4px;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-sidebar {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .admin-sidebar .brand {
+    max-width: 210px;
+  }
+
+  .admin-sidebar .brand small {
+    display: none;
+  }
+
+  .admin-signout span {
+    display: none;
+  }
+
+  .admin-nav button {
+    padding-inline: 11px;
+    font-size: 0.88rem;
+  }
+
+  .admin-topbar-actions,
+  .admin-card-actions {
+    grid-template-columns: 1fr;
   }
 }

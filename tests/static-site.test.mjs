@@ -190,6 +190,8 @@ test("footer social links use recognizable brand icons and CMS-managed URLs", ()
 test("public site is wired for Firebase CMS hydration and appointment storage", () => {
   const html = readHtml();
   const siteCms = readFileSync(siteCmsPath, "utf8");
+  const mainJs = readFileSync(new URL("../assets/js/main.js", import.meta.url), "utf8");
+  const css = readFileSync(stylesPath, "utf8");
 
   assert.match(html, /assets\/js\/site-cms\.js/);
   assert.match(html, /data-cms-root/);
@@ -197,11 +199,19 @@ test("public site is wired for Firebase CMS hydration and appointment storage", 
   assert.match(html, /data-cms-section="gallery"/);
   assert.match(html, /data-cms-section="testimonials"/);
   assert.match(html, /data-cms-section="faqs"/);
+  assert.match(html, /data-cms-section="publications"/);
   assert.match(html, /data-cms-field="hero\.headline"/);
   assert.match(html, /data-cms-field="contact\.phone"/);
   assert.match(html, /data-appointment-form/);
   assert.match(siteCms, /CURRENT_CONTENT_VERSION/);
   assert.match(siteCms, /isCurrentCmsContent/);
+  assert.match(siteCms, /renderPublications/);
+  assert.match(siteCms, /CMS_COLLECTIONS\.publications/);
+  assert.match(mainJs, /setupScrollReveals/);
+  assert.match(mainJs, /refreshCmsInteractions\(\)[\s\S]*setupScrollReveals/);
+  assert.match(css, /\.reveal-on-scroll/);
+  assert.match(css, /\.reveal-on-scroll\.is-visible/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
 test("admin dashboard and Firebase modules exist with required capabilities", () => {
@@ -223,6 +233,7 @@ test("admin dashboard and Firebase modules exist with required capabilities", ()
     "Services",
     "Gallery",
     "Testimonials",
+    "Publications",
     "FAQ",
     "Clinic Settings",
     "data-admin-view",
@@ -254,8 +265,28 @@ test("admin dashboard and Firebase modules exist with required capabilities", ()
   assert.match(siteCms, /loadPublicCms/);
   assert.match(siteCms, /saveAppointmentRequest/);
   assert.match(adminJs, /contentVersion:\s*CURRENT_CONTENT_VERSION/);
+  assert.match(admin, /data-admin-view="publications"/);
+  assert.match(admin, /data-admin-form="publications"/);
+  assert.match(admin, /name="title"[^>]*placeholder="Publication title"/);
+  assert.match(admin, /name="description"/);
+  assert.match(admin, /name="link"[^>]*type="url"/);
+  assert.match(adminJs, /publications:\s*\[/);
+  assert.match(client, /publications:\s*"publications"/);
   assert.match(adminJs, /signInAdmin/);
   assert.doesNotMatch(adminJs, /uploadImageFile|uploadOptionalFile/);
+});
+
+test("admin dashboard CSS supports responsive, consistent management views", () => {
+  const css = readFileSync(stylesPath, "utf8");
+
+  assert.match(css, /\.admin-shell\s*\{[^}]*background:\s*var\(--surface\)/s);
+  assert.match(css, /\.admin-sidebar\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto/s);
+  assert.match(css, /\.admin-nav\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s);
+  assert.match(css, /\.admin-nav button\s*\{[^}]*min-height:\s*44px/s);
+  assert.match(css, /\.admin-panel\.active\s*\{[^}]*display:\s*grid/s);
+  assert.match(css, /@media \(max-width:\s*760px\)\s*\{[\s\S]*\.admin-topbar-actions\s+\.btn/s);
+  assert.match(css, /@media \(max-width:\s*760px\)\s*\{[\s\S]*\.admin-card-actions\s+\.btn/s);
+  assert.match(css, /@media \(max-width:\s*520px\)\s*\{[\s\S]*\.admin-sidebar\s+\.brand/s);
 });
 
 test("Firebase security rules are included for Firestore only", () => {
@@ -267,7 +298,28 @@ test("Firebase security rules are included for Firestore only", () => {
   assert.match(firestoreRules, /match \/siteSettings\/\{document\}/);
   assert.match(firestoreRules, /dr\.asifdentalimplantcenter@gmail\.com/);
   assert.doesNotMatch(firestoreRules, /ranazeshi41@gmail\.com|admin@doctorsport\.com|doctor@example\.com/);
+  assert.match(firestoreRules, /match \/publications\/\{document\}/);
   assert.match(firestoreRules, /match \/appointmentRequests\/\{document\}/);
   assert.match(firestoreRules, /allow create: if true/);
   assert.match(firestoreRules, /allow write: if request\.auth != null/);
+});
+
+test("publications render as professional outbound links and are manageable from admin", () => {
+  const html = readHtml();
+  const siteCms = readFileSync(siteCmsPath, "utf8");
+  const adminJs = readFileSync(adminJsPath, "utf8");
+
+  assert.match(html, /id="publications"/);
+  assert.match(html, /data-cms-section="publications"/);
+  assert.match(html, /href="#publications"/);
+  assert.match(html, /An overview of dental impression disinfection techniques/);
+  assert.match(html, /target="_blank" rel="noopener"/);
+
+  for (const field of ["title", "description", "link", "order", "active"]) {
+    assert.match(adminJs, new RegExp(field), `Publication seed/admin code should include ${field}`);
+  }
+
+  assert.match(siteCms, /function renderPublications/);
+  assert.match(siteCms, /target="_blank" rel="noopener"/);
+  assert.match(siteCms, /escapeAttribute\(item\.link/);
 });

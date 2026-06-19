@@ -64,6 +64,62 @@ if ("IntersectionObserver" in window && sections.length) {
   sections.forEach((section) => observer.observe(section));
 }
 
+const revealTargets = [
+  ".section-heading",
+  ".profile-card",
+  ".credentials article",
+  ".timeline",
+  ".cv-grid article",
+  ".publication-card",
+  ".service-card",
+  ".why-grid article",
+  ".case-card",
+  ".testimonial-card",
+  ".faq-item",
+  ".appointment-form",
+  ".clinic-info-card",
+  ".map-placeholder",
+];
+const revealedElements = new WeakSet();
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let revealObserver = null;
+
+function getRevealObserver() {
+  if (revealObserver || !("IntersectionObserver" in window)) return revealObserver;
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -10% 0px", threshold: 0.12 }
+  );
+  return revealObserver;
+}
+
+function setupScrollReveals(root = document) {
+  const targets = [...root.querySelectorAll(revealTargets.join(","))];
+  const observer = getRevealObserver();
+
+  targets.forEach((element, index) => {
+    if (revealedElements.has(element)) return;
+    revealedElements.add(element);
+    element.classList.add("reveal-on-scroll");
+    element.style.setProperty("--reveal-delay", `${Math.min(index % 6, 5) * 45}ms`);
+
+    if (prefersReducedMotion.matches || !observer) {
+      element.classList.add("is-visible");
+      return;
+    }
+
+    observer.observe(element);
+  });
+}
+
+setupScrollReveals();
+
 const filterButtons = [...document.querySelectorAll("[data-filter]")];
 const getCaseCards = () => [...document.querySelectorAll("[data-category]")];
 
@@ -170,5 +226,6 @@ window.DentalSite = {
   refreshCmsInteractions() {
     window.lucide?.createIcons();
     setupFaqAccordions();
+    setupScrollReveals();
   },
 };

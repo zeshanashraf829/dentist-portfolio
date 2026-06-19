@@ -25,6 +25,7 @@ const state = {
     services: [],
     gallery: [],
     testimonials: [],
+    publications: [],
     faqs: [],
   },
   unsubs: [],
@@ -79,6 +80,14 @@ const starterContent = {
     ["sara-malik", { patientName: "Sara Malik", role: "Cosmetic Dentistry Patient", rating: 5, review: "The consultation was calm and clear. I understood the treatment plan before we started, and the final result feels completely natural.", photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80", order: 1, active: true }],
     ["hamza-farooq", { patientName: "Hamza Farooq", role: "Crown & Bite Rehabilitation Patient", rating: 5, review: "My crowns and bite were planned with great care. The treatment felt organized, and my smile looks natural.", photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80", order: 2, active: true }],
     ["amina-sheikh", { patientName: "Amina Sheikh", role: "Implant Patient", rating: 5, review: "The clinic feels modern, clean, and welcoming. My implant planning was explained step by step, which made the process easier.", photoUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=300&q=80", order: 3, active: true }],
+  ],
+  publications: [
+    ["impression-disinfection", { title: "An overview of dental impression disinfection techniques", description: "JPDA literature review on infection control and dental impression disinfection protocols.", link: "https://www.jpda.com.pk/an-overview-of-dental-impression-disinfection-techniques-a-literature-review", order: 1, active: true }],
+    ["denture-hyperplasia", { title: "A Massive Denture Induced Hyperplastic Lesion in Maxilla", description: "Case report covering surgical management and prosthodontic rehabilitation after denture-induced hyperplasia.", link: "https://doi.org/10.25301/JPDA.281.47", order: 2, active: true }],
+    ["pharyngeal-obturator", { title: "Pharyngeal Obturator Prosthetic Rehabilitation of Velopharyngeal Insufficiency", description: "JCPSP case report on maxillofacial prosthodontic rehabilitation with a pharyngeal obturator.", link: "https://pubmed.ncbi.nlm.nih.gov/31839102/", order: 3, active: true }],
+    ["denture-hygiene", { title: "Assessment of Knowledge and Practices about Denture Hygiene among Complete Denture Wearers in Lahore City", description: "JPDA research on denture hygiene awareness and patient practices among complete denture wearers.", link: "https://www.jpda.com.pk/assessment-of-knowledge-and-practices-about-denture-hygiene-among-complete-denture-wearers-in-lahore-city", order: 4, active: true }],
+    ["alginate-disinfection", { title: "The effect of sodium hypochlorite disinfectant on alginate impression material", description: "Professional Medical Journal study on dimensional stability after sodium hypochlorite disinfection.", link: "https://theprofesional.com/index.php/tpmj/article/view/6200", order: 5, active: true }],
+    ["golden-proportion", { title: "Analysis of Golden Proportion in Maxillary Anterior Dentition", description: "Pakistan Oral & Dental Journal article on esthetic proportions in maxillary anterior teeth.", link: "https://podj.com.pk/index.php/podj/article/view/690", order: 6, active: true }],
   ],
   faqs: [
     ["full-mouth-rehab", { question: "Who needs full mouth rehabilitation?", answer: "It is considered for patients with multiple missing, worn, broken, or failing teeth, bite collapse, or complex restorative needs that require coordinated prosthodontic planning.", order: 1, active: true }],
@@ -254,6 +263,16 @@ function renderTestimonials(rows) {
   `);
 }
 
+function renderPublications(rows) {
+  renderSimpleList("publications", rows, (item) => `
+    <i data-lucide="book-open-check" aria-hidden="true"></i>
+    <h3>${escapeHtml(item.title || "Untitled publication")}</h3>
+    <p>${escapeHtml(item.description || "")}</p>
+    ${item.link ? `<a href="${escapeAttribute(item.link)}" target="_blank" rel="noopener">Open link</a>` : ""}
+    <small>Order ${Number(item.order || 0)} ${item.active === false ? "• Hidden" : "• Visible"}</small>
+  `);
+}
+
 function renderFaqs(rows) {
   renderSimpleList("faqs", rows, (item) => `
     <h3>${escapeHtml(item.question || "Untitled question")}</h3>
@@ -298,6 +317,7 @@ function collectionToFirestore(collection) {
     services: CMS_COLLECTIONS.services,
     gallery: CMS_COLLECTIONS.gallery,
     testimonials: CMS_COLLECTIONS.testimonials,
+    publications: CMS_COLLECTIONS.publications,
     faqs: CMS_COLLECTIONS.faqs,
   }[collection];
 }
@@ -331,6 +351,11 @@ async function startSubscriptions() {
   state.unsubs.push(await subscribeCollection(CMS_COLLECTIONS.testimonials, (rows) => {
     state.records.testimonials = rows;
     renderTestimonials(rows);
+  }));
+
+  state.unsubs.push(await subscribeCollection(CMS_COLLECTIONS.publications, (rows) => {
+    state.records.publications = rows;
+    renderPublications(rows);
   }));
 
   state.unsubs.push(await subscribeCollection(CMS_COLLECTIONS.faqs, (rows) => {
@@ -372,6 +397,7 @@ function bindEvents() {
         ...starterContent.services.map(([id, data]) => saveDocument(CMS_COLLECTIONS.services, data, id)),
         ...starterContent.gallery.map(([id, data]) => saveDocument(CMS_COLLECTIONS.gallery, data, id)),
         ...starterContent.testimonials.map(([id, data]) => saveDocument(CMS_COLLECTIONS.testimonials, data, id)),
+        ...starterContent.publications.map(([id, data]) => saveDocument(CMS_COLLECTIONS.publications, data, id)),
         ...starterContent.faqs.map(([id, data]) => saveDocument(CMS_COLLECTIONS.faqs, data, id)),
       ]);
       await loadSettingsForm();

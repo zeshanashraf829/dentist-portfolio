@@ -84,6 +84,10 @@
               <i data-lucide="star" aria-hidden="true"></i>
               Testimonials
             </button>
+            <button type="button" data-admin-view="publications">
+              <i data-lucide="book-open-check" aria-hidden="true"></i>
+              Publications
+            </button>
             <button type="button" data-admin-view="faqs">
               <i data-lucide="circle-help" aria-hidden="true"></i>
               FAQ
@@ -274,6 +278,43 @@
               <button class="btn btn-secondary" type="reset">Clear</button>
             </form>
             <div class="admin-list" data-list="testimonials"></div>
+          </section>
+
+          <section class="admin-panel" data-admin-panel="publications">
+            <div class="admin-section-heading">
+              <div>
+                <h2>Publications</h2>
+                <p>Add research publications with links shown on the public website.</p>
+              </div>
+            </div>
+            <form class="admin-editor" data-admin-form="publications">
+              <input type="hidden" name="id" />
+              <div class="form-row">
+                <label>Title</label>
+                <input name="title" required placeholder="Publication title" />
+              </div>
+              <div class="form-row">
+                <label>Description</label>
+                <textarea name="description" rows="4" required placeholder="Short journal, year, or research summary"></textarea>
+              </div>
+              <div class="form-row">
+                <label>Publication Link</label>
+                <input name="link" type="url" required placeholder="https://journal-website.com/article" />
+              </div>
+              <div class="form-row two-columns">
+                <div>
+                  <label>Order</label>
+                  <input name="order" type="number" value="1" min="0" />
+                </div>
+                <label class="admin-check">
+                  <input name="active" type="checkbox" checked />
+                  Visible on website
+                </label>
+              </div>
+              <button class="btn btn-primary" type="submit">Save Publication</button>
+              <button class="btn btn-secondary" type="reset">Clear</button>
+            </form>
+            <div class="admin-list" data-list="publications"></div>
           </section>
 
           <section class="admin-panel" data-admin-panel="faqs">

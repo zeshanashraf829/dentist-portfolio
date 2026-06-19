@@ -7,6 +7,7 @@ export const CMS_COLLECTIONS = {
   services: "services",
   gallery: "galleryCases",
   testimonials: "testimonials",
+  publications: "publications",
   faqs: "faqs",
   settings: "siteSettings",
 };

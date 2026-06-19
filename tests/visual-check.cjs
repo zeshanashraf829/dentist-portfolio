@@ -16,6 +16,32 @@ async function collectMetrics(page) {
   }));
 }
 
+async function showAdminDashboard(page) {
+  await page.evaluate(() => {
+    document.querySelector("[data-login-screen]")?.setAttribute("hidden", "");
+    document.querySelector("[data-dashboard-screen]")?.removeAttribute("hidden");
+  });
+}
+
+async function collectAdminDashboardMetrics(page, width, height, screenshotName) {
+  await page.setViewportSize({ width, height });
+  await page.goto(`${baseUrl.replace(/\/$/, "")}/admin.html`, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(600);
+  await showAdminDashboard(page);
+  await page.waitForTimeout(300);
+
+  const metrics = {
+    ...(await collectMetrics(page)),
+    dashboardVisible: await page.locator("[data-dashboard-screen]").isVisible(),
+    sidebarVisible: await page.locator(".admin-sidebar").isVisible(),
+    navVisible: await page.locator(".admin-nav").isVisible(),
+    activePanelVisible: await page.locator(".admin-panel.active").isVisible(),
+    topbarActionCount: await page.locator(".admin-topbar-actions .btn").count(),
+  };
+  await page.screenshot({ path: `previews/${screenshotName}`, fullPage: true });
+  return metrics;
+}
+
 async function main() {
   mkdirSync("previews", { recursive: true });
 
@@ -69,12 +95,19 @@ async function main() {
   };
   await page.screenshot({ path: "previews/admin-preview.png", fullPage: true });
 
+  const adminDashboardDesktopMetrics = await collectAdminDashboardMetrics(page, 1440, 1000, "admin-dashboard-desktop-preview.png");
+  const adminDashboardTabletMetrics = await collectAdminDashboardMetrics(page, 768, 1000, "admin-dashboard-tablet-preview.png");
+  const adminDashboardMobileMetrics = await collectAdminDashboardMetrics(page, 390, 844, "admin-dashboard-mobile-preview.png");
+
   await browser.close();
 
   const result = {
     desktopMetrics,
     mobileMetrics,
     adminMetrics,
+    adminDashboardDesktopMetrics,
+    adminDashboardTabletMetrics,
+    adminDashboardMobileMetrics,
     interactions: {
       lightboxOpen,
       faqExpanded,
@@ -88,6 +121,9 @@ async function main() {
   if (desktopMetrics.scrollWidth > desktopMetrics.width) failures.push("Desktop has horizontal overflow");
   if (mobileMetrics.scrollWidth > mobileMetrics.width) failures.push("Mobile has horizontal overflow");
   if (adminMetrics.scrollWidth > adminMetrics.width) failures.push("Admin page has horizontal overflow");
+  if (adminDashboardDesktopMetrics.scrollWidth > adminDashboardDesktopMetrics.width) failures.push("Admin dashboard desktop has horizontal overflow");
+  if (adminDashboardTabletMetrics.scrollWidth > adminDashboardTabletMetrics.width) failures.push("Admin dashboard tablet has horizontal overflow");
+  if (adminDashboardMobileMetrics.scrollWidth > adminDashboardMobileMetrics.width) failures.push("Admin dashboard mobile has horizontal overflow");
   if (desktopMetrics.brokenImages.length || mobileMetrics.brokenImages.length) failures.push("One or more images failed to load");
   if (!lightboxOpen) failures.push("Lightbox did not open");
   if (faqExpanded !== "true") failures.push("FAQ did not expand");
@@ -100,6 +136,16 @@ async function main() {
   }
   if (!navToggleVisible || !mobileMenuOpen) failures.push("Mobile navigation did not open");
   if (!adminMetrics.loginVisible || adminMetrics.dashboardVisible) failures.push("Admin setup/login state did not render correctly");
+  for (const [label, metrics] of [
+    ["desktop", adminDashboardDesktopMetrics],
+    ["tablet", adminDashboardTabletMetrics],
+    ["mobile", adminDashboardMobileMetrics],
+  ]) {
+    if (!metrics.dashboardVisible || !metrics.sidebarVisible || !metrics.navVisible || !metrics.activePanelVisible) {
+      failures.push(`Admin dashboard ${label} layout did not render key regions`);
+    }
+    if (metrics.topbarActionCount < 2) failures.push(`Admin dashboard ${label} actions are missing`);
+  }
 
   console.log(JSON.stringify(result, null, 2));
 
