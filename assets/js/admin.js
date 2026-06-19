@@ -338,13 +338,19 @@ function renderSimpleList(collection, rows, bodyRenderer) {
 async function handleCollectionForm(event, collection) {
   event.preventDefault();
   const form = event.currentTarget;
-  const id = form.elements.id.value;
+  const id = form.elements.id?.value?.trim() || "";
   const data = formToObject(form);
 
-  await saveDocument(collectionToFirestore(collection), data, id);
+  await saveDocument(getFirestoreCollection(collection), data, id);
   form.reset();
-  form.elements.id.value = "";
+  if (form.elements.id) form.elements.id.value = "";
   setStatus("Saved successfully.", "success");
+}
+
+function getFirestoreCollection(collection) {
+  const firestoreCollection = collectionToFirestore(collection);
+  if (!firestoreCollection) throw new Error(`Unknown admin collection: ${collection || "missing"}.`);
+  return firestoreCollection;
 }
 
 function collectionToFirestore(collection) {
@@ -450,10 +456,6 @@ function bindEvents() {
     }
   }
 
-  $$("[data-seed-content]").forEach((button) => {
-    button.addEventListener("click", seedStarterContent);
-  });
-
   $$("[data-admin-form]").forEach((form) => {
     form.addEventListener("submit", (event) => handleCollectionForm(event, form.dataset.adminForm).catch((error) => setStatus(error.message, "error")));
     form.addEventListener("reset", () => {
@@ -474,9 +476,15 @@ function bindEvents() {
   });
 
   document.addEventListener("click", async (event) => {
+    const seedButton = event.target.closest("[data-seed-content]");
     const editButton = event.target.closest("[data-edit-record]");
     const deleteButton = event.target.closest("[data-delete-record]");
     const statusButton = event.target.closest("[data-appointment-status]");
+
+    if (seedButton) {
+      await seedStarterContent();
+      return;
+    }
 
     if (editButton) {
       const collection = editButton.dataset.editRecord;
@@ -488,13 +496,22 @@ function bindEvents() {
     if (deleteButton) {
       const collection = deleteButton.dataset.deleteRecord;
       const id = deleteButton.dataset.id;
+      if (!id) {
+        setStatus("Could not delete this record because its document id is missing.", "error");
+        return;
+      }
       if (!window.confirm("Delete this record?")) return;
-      await deleteDocument(collectionToFirestore(collection), id);
+      await deleteDocument(getFirestoreCollection(collection), id);
       setStatus("Deleted.", "success");
     }
 
     if (statusButton) {
-      await saveDocument(CMS_COLLECTIONS.appointments, { status: statusButton.dataset.appointmentStatus }, statusButton.dataset.id);
+      const id = statusButton.dataset.id;
+      if (!id) {
+        setStatus("Could not update this appointment because its document id is missing.", "error");
+        return;
+      }
+      await saveDocument(CMS_COLLECTIONS.appointments, { status: statusButton.dataset.appointmentStatus }, id);
       setStatus("Appointment updated.", "success");
     }
   });

@@ -25,6 +25,18 @@ function sdkUrl(packageName) {
   return `https://www.gstatic.com/firebasejs/${firebaseCmsSettings.sdkVersion}/${packageName}.js`;
 }
 
+function assertCollectionName(collectionName) {
+  const safeCollectionName = String(collectionName ?? "").trim();
+  if (!safeCollectionName) throw new Error("Missing Firestore collection name.");
+  return safeCollectionName;
+}
+
+function assertDocumentId(id) {
+  const safeId = String(id ?? "").trim();
+  if (!safeId) throw new Error("Missing Firestore document id.");
+  return safeId;
+}
+
 async function loadFirebaseSdk() {
   if (firebaseState.sdk) return firebaseState.sdk;
 
@@ -116,7 +128,8 @@ export async function subscribeCollection(collectionName, callback, options = {}
   }
 
   const { collection, onSnapshot, orderBy, query } = services.sdk.firestore;
-  const collectionRef = collection(services.db, collectionName);
+  const safeCollectionName = assertCollectionName(collectionName);
+  const collectionRef = collection(services.db, safeCollectionName);
   const queryRef = options.orderBy === false ? collectionRef : query(collectionRef, orderBy(options.orderBy || "order", "asc"));
 
   return onSnapshot(queryRef, (snapshot) => {
@@ -129,7 +142,8 @@ export async function getOrderedCollection(collectionName, options = {}) {
   if (!services.configured) return [];
 
   const { collection, getDocs, orderBy, query } = services.sdk.firestore;
-  const collectionRef = collection(services.db, collectionName);
+  const safeCollectionName = assertCollectionName(collectionName);
+  const collectionRef = collection(services.db, safeCollectionName);
   const queryRef = options.orderBy === false ? collectionRef : query(collectionRef, orderBy(options.orderBy || "order", "asc"));
   const snapshot = await getDocs(queryRef);
 
@@ -162,8 +176,10 @@ export async function saveDocument(collectionName, data, id = "") {
   if (!services.configured) throw new Error("Firebase is not configured yet.");
 
   const { addDoc, collection, doc, serverTimestamp, setDoc } = services.sdk.firestore;
+  const safeCollectionName = assertCollectionName(collectionName);
+  const safeId = String(id ?? "").trim();
   const payload = cleanRecord(
-    id
+    safeId
       ? {
           ...data,
           updatedAt: serverTimestamp(),
@@ -175,12 +191,12 @@ export async function saveDocument(collectionName, data, id = "") {
         }
   );
 
-  if (id) {
-    await setDoc(doc(services.db, collectionName, id), payload, { merge: true });
-    return id;
+  if (safeId) {
+    await setDoc(doc(services.db, safeCollectionName, safeId), payload, { merge: true });
+    return safeId;
   }
 
-  const created = await addDoc(collection(services.db, collectionName), payload);
+  const created = await addDoc(collection(services.db, safeCollectionName), payload);
   return created.id;
 }
 
@@ -189,7 +205,9 @@ export async function deleteDocument(collectionName, id) {
   if (!services.configured) throw new Error("Firebase is not configured yet.");
 
   const { deleteDoc, doc } = services.sdk.firestore;
-  await deleteDoc(doc(services.db, collectionName, id));
+  const safeCollectionName = assertCollectionName(collectionName);
+  const safeId = assertDocumentId(id);
+  await deleteDoc(doc(services.db, safeCollectionName, safeId));
 }
 
 export async function saveAppointmentRequest(data) {

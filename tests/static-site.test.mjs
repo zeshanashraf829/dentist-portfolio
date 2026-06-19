@@ -288,10 +288,24 @@ test("admin dashboard and Firebase modules exist with required capabilities", ()
   assert.match(admin, /data-publications-list-heading/);
   assert.match(adminJs, /publications:\s*\[/);
   assert.match(adminJs, /Default publications are not loaded yet/);
-  assert.match(adminJs, /\$\$\(\"\[data-seed-content\]\"\)/);
+  assert.match(adminJs, /event\.target\.closest\("\[data-seed-content\]"\)/);
   assert.match(client, /publications:\s*"publications"/);
   assert.match(adminJs, /signInAdmin/);
   assert.doesNotMatch(adminJs, /uploadImageFile|uploadOptionalFile/);
+});
+
+test("admin Firebase writes guard missing collections and document ids", () => {
+  const client = readFileSync(firebaseClientPath, "utf8");
+  const adminJs = readFileSync(adminJsPath, "utf8");
+
+  assert.match(client, /function assertCollectionName/);
+  assert.match(client, /function assertDocumentId/);
+  assert.match(client, /const safeCollectionName = assertCollectionName\(collectionName\)/);
+  assert.match(client, /const safeId = assertDocumentId\(id\)/);
+  assert.match(adminJs, /function getFirestoreCollection/);
+  assert.match(adminJs, /Unknown admin collection/);
+  assert.match(adminJs, /Could not delete this record because its document id is missing/);
+  assert.match(adminJs, /Could not update this appointment because its document id is missing/);
 });
 
 test("admin dashboard CSS supports responsive, consistent management views", () => {
